@@ -1,0 +1,107 @@
+# macOS / Windows
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Python / backend
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# JavaScript / web
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.next/
+.nuxt/
+.svelte-kit/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ESP-IDF / PlatformIO / embedded build outputs
+firmware/build/
+firmware/sdkconfig
+firmware/sdkconfig.old
+firmware/managed_components/
+.pio/
+.espressif/
+*.elf
+*.map
+*.uf2
+*.hex
+*.lst
+*.dmp
+core.*
+
+# C/C++ tooling
+compile_commands.json
+.cache/
+
+# Local infrastructure state
+infra/**/data/
+infra/**/log/
+infra/**/logs/
+infra/**/tmp/
+mosquitto.db
+*.pid
+
+# Test and diagnostic artifacts
+test-results/
+artifacts/
+logs/
+captures/
+*.pcap
+*.pcapng
+*.wav
+*.raw
+
+# Temporary files and archives
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.zip
+*.tar
+*.tar.gz
