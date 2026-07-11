@@ -41,7 +41,13 @@ async def lifespan(app) -> AsyncIterator[None]:
     bridge = MQTTBridge(session_factory=AsyncSessionLocal)
     await bridge.start()
 
+    from app.workers.command_outbox import CommandOutboxWorker
+
+    outbox_worker = CommandOutboxWorker(AsyncSessionLocal, bridge.publisher)
+    await outbox_worker.start()
+
     app.state.mqtt_bridge = bridge
+    app.state.outbox_worker = outbox_worker
     app.state.engine = engine
     app.state.async_session = AsyncSessionLocal
     app.state.minio = minio_client
@@ -49,6 +55,7 @@ async def lifespan(app) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        await outbox_worker.stop()
         await bridge.stop()
         await engine.dispose()
         log.info("shutdown")

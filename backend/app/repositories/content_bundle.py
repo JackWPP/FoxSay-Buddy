@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.domain.models import ContentBundle
 from app.repositories.base import BaseRepository
@@ -18,6 +18,13 @@ class ContentBundleRepository(BaseRepository):
         self.session.add(bundle)
         await self.session.flush()
         return bundle
+
+    async def update_status(self, bundle_id: str, status: str) -> None:
+        await self.session.execute(
+            update(ContentBundle)
+            .where(ContentBundle.id == bundle_id)
+            .values(status=status)
+        )
 
     async def list_all(self, limit: int = 100) -> list[ContentBundle]:
         result = await self.session.execute(

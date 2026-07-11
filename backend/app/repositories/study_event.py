@@ -62,6 +62,7 @@ class StudyEventRepository(BaseRepository):
         device_id: str,
         *,
         limit: int = 100,
+        offset: int = 0,
         card_id: str | None = None,
     ) -> list[StudyEvent]:
         stmt = (
@@ -69,8 +70,31 @@ class StudyEventRepository(BaseRepository):
             .where(StudyEvent.device_id == device_id)
             .order_by(StudyEvent.received_at.desc())
             .limit(limit)
+            .offset(offset)
         )
         if card_id is not None:
             stmt = stmt.where(StudyEvent.card_id == card_id)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def count_by_device(self, device_id: str, *, card_id: str | None = None) -> int:
+        from sqlalchemy import func
+
+        stmt = select(func.count()).select_from(StudyEvent).where(StudyEvent.device_id == device_id)
+        if card_id is not None:
+            stmt = stmt.where(StudyEvent.card_id == card_id)
+        result = await self.session.execute(stmt)
+        return int(result.scalar_one())
+
+    async def list_progress(
+        self, device_id: str, *, limit: int = 100, offset: int = 0
+    ) -> list[CardProgress]:
+        stmt = (
+            select(CardProgress)
+            .where(CardProgress.device_id == device_id)
+            .order_by(CardProgress.last_seen_at.desc().nullslast())
+            .limit(limit)
+            .offset(offset)
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())

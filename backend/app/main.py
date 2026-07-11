@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.api.errors import register_error_handlers
 from app.api.routers import (
+    cards,
     content_bundles,
     content_sync,
     devices,
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     app.include_router(pairing.router)
     app.include_router(devices.router)
     app.include_router(content_bundles.router)
+    app.include_router(cards.router)
     app.include_router(content_sync.router)
     app.include_router(study_events.router)
     return app

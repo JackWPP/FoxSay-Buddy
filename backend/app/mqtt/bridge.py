@@ -73,6 +73,9 @@ class MQTTBridge:
                     identifier=settings.mqtt_client_id,
                     hostname=settings.mqtt_broker_host,
                     port=settings.mqtt_broker_port,
+                    # 持久会话:服务端重连后补发离线期间的 events/acks。
+                    # 设备侧是否持久会话由设备代码控制(见对接指南 §6)。
+                    clean_session=False,
                 ) as client:
                     self._client = client
                     self.connected = True

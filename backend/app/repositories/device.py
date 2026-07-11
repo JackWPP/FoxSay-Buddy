@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import update
+from sqlalchemy import select, update
 
 from app.domain.models import Device
 from app.repositories.base import BaseRepository
@@ -20,6 +20,12 @@ class DeviceRepository(BaseRepository):
         self.session.add(device)
         await self.session.flush()
         return device
+
+    async def list_all(self, *, limit: int = 100, offset: int = 0) -> list[Device]:
+        result = await self.session.execute(
+            select(Device).order_by(Device.created_at.desc()).limit(limit).offset(offset)
+        )
+        return list(result.scalars().all())
 
     async def touch(
         self,

@@ -103,6 +103,8 @@ class ContentBundleOut(BaseModel):
     sha256: str
     size_bytes: int
     status: str
+    object_key: str | None = None
+    upload_url: str | None = None
     created_at: datetime
 
 
@@ -123,3 +125,38 @@ class StudyEventOut(BaseModel):
     action: str
     occurred_at: datetime | None = None
     received_at: datetime
+
+
+class Page[T](BaseModel):
+    """分页响应。"""
+
+    items: list[T]
+    total: int
+    limit: int
+    offset: int
+
+
+class CardCreate(BaseModel):
+    id: str
+    bundle_id: str
+    type: str
+    front: dict[str, Any] = Field(default_factory=dict)
+    back: dict[str, Any] = Field(default_factory=dict)
+    assets: dict[str, Any] = Field(default_factory=dict)
+
+
+class CardOut(BaseModel):
+    id: str
+    bundle_id: str
+    type: str
+    front: dict[str, Any]
+    back: dict[str, Any]
+    assets: dict[str, Any]
+
+
+class CardProgressOut(BaseModel):
+    device_id: str
+    card_id: str
+    difficulty: str | None = None
+    last_seen_at: datetime | None = None
+    revision: int

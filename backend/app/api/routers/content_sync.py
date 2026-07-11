@@ -6,7 +6,7 @@ from app.core.errors import AppError, ErrorCode
 from app.core.logging import get_logger
 from app.domain.schemas import ContentSyncCommandOut, ContentSyncRequest
 from app.domain.services.content import ContentService
-from app.repositories.command import DeviceCommandRepository
+from app.repositories.command import DeviceCommandRepository as CommandRepository
 from app.repositories.content_bundle import ContentBundleRepository
 from app.repositories.device import DeviceRepository
 
@@ -28,13 +28,15 @@ async def content_sync(
 
     svc = ContentService(
         ContentBundleRepository(session),
-        DeviceCommandRepository(session),
+        CommandRepository(session),
         minio_client=minio_client,
     )
     command, payload = await svc.build_content_sync(device_id, body.bundle_version)
     await session.commit()
 
-    # 通过 MQTT 下发命令。MVP 直接发；TODO: outbox worker 在断线后重发。
+    # 通过 MQTT 下发命令。publish 成功置 accepted(等设备 ack 进终态);
+    # 失败保持 pending,由 command_outbox worker 重试。
+    published = True
     try:
         await publisher.publish_command(
             device_id,
@@ -44,7 +46,12 @@ async def content_sync(
             expires_at=command.expires_at,
         )
     except Exception as e:  # noqa: BLE001
+        published = False
         log.error("content_sync_publish_failed", command_id=command.message_id, error=str(e))
+
+    if published:
+        await CommandRepository(session).update_status(command.message_id, "accepted")
+        await session.commit()
 
     return ContentSyncCommandOut(
         message_id=command.message_id,
