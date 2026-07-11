@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "message_id": "01JZQY8AABCD",
+  "device_id": "dev_01JZQXABCD",
+  "sent_at": "2026-07-11T05:30:00Z",
+  "clock_synced": true,
+  "type": "device.presence",
+  "payload": {
+    "online": true,
+    "firmware_version": "0.1.0",
+    "content_version": "2026.07.11.1",
+    "network": "wifi",
+    "posture": "upright",
+    "free_heap_bytes": 131072,
+    "reset_reason": "power_on"
+  }
+}

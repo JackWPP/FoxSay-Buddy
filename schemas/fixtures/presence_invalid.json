@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "message_id": "01JZQY8AABCE",
+  "device_id": "dev_01JZQXABCD",
+  "sent_at": "2026-07-11T05:30:00Z",
+  "type": "device.presence",
+  "payload": {
+    "firmware_version": "0.1.0",
+    "content_version": "2026.07.11.1"
+  }
+}

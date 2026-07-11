@@ -36,7 +36,7 @@
 | `foxsay/v1/devices/{id}/commands` | server → device | 1 | no | 内容同步、配置和 OTA 命令 |
 | `foxsay/v1/devices/{id}/acks` | 双向 | 1 | no | 对 events/commands 的业务确认 |
 
-ACL 要求设备 `{id}` 与证书身份一致。禁止订阅其他设备或 wildcard topic。
+ACL 要求设备 `{id}` 与证书身份一致。禁止订阅其他设备或 wildcard topic。local 环境按 ADR-008 不启用 ACL（匿名 + 全开放），生产部署必须恢复上述限制。
 
 ## 4. Presence
 
@@ -135,7 +135,7 @@ P0 command：
 
 | Method & path | 用途 |
 | --- | --- |
-| `POST /v1/device-pairing/sessions` | 已登录用户创建短期配对会话 |
+| `POST /v1/device-pairing/sessions` | 创建短期配对会话（local 无鉴权，见 §10） |
 | `POST /v1/device-pairing/claim` | 设备以配对码换取绑定与设备凭据 |
 | `POST /v1/devices/{id}/credentials/rotate` | 轮换或恢复设备凭据 |
 | `GET /v1/devices/{id}` | 查询设备、在线和版本状态 |
@@ -154,3 +154,14 @@ P0 command：
 - `rejected` 不自动重试；`failed` 仅在错误码明确可重试时重试；
 - ack 也可能重复，双方按 `correlation_id + status` 幂等处理；
 - presence 是快照，可被新值覆盖；events 不 retain。
+
+## 10. 鉴权（local 环境）
+
+ADR-008 决定 MVP 不做任何鉴权。local 环境具体表现为：
+
+- broker：`allow_anonymous true`，不配置 ACL，任何客户端可连、可订阅任意 topic；
+- REST：所有端点无 token / 无 API key，直接开放；
+- 设备配对：`POST /v1/device-pairing/sessions` 无需身份即可创建配对码，`claim` 换取的设备凭据仅为占位标识，不做强制校验；
+- 仅靠网络隔离保证安全，部署在可信网络或本机。
+
+生产部署必须在试产前恢复：每设备独立凭据、broker ACL（设备只能访问自身 topic）、REST 鉴权与 TLS。

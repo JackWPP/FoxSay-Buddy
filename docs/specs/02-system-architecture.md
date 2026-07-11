@@ -55,14 +55,15 @@ flowchart LR
 
 | 实体 | 关键字段 |
 | --- | --- |
-| User | id, locale, timezone, created_at |
-| Device | id, owner_id, name, firmware_version, credential_version, last_seen_at |
+| Device | id, name, firmware_version, credential_version, last_seen_at |
 | PairingSession | code_hash, expires_at, claimed_at, device_id |
 | ContentBundle | id, version, manifest_url, sha256, size_bytes, status |
 | Card | id, bundle_id, type, front, back, assets |
 | StudyEvent | message_id, device_id, card_id, action, occurred_at, received_at |
-| CardProgress | user_id, card_id, difficulty, last_seen_at, revision |
+| CardProgress | device_id, card_id, difficulty, last_seen_at, revision |
 | DeviceCommand | message_id, device_id, type, payload, expires_at, status |
+
+> ADR-008：MVP 不引入 `User` 实体。数据归属直接挂在 `Device` 上（单设备 / 单用户场景）；主程序对接与多用户共享设备列为 P1+，届时再补账户层与归属迁移。
 
 `StudyEvent.message_id` 唯一，用于 QoS 1 去重。`CardProgress` 是事件投影，不能替代原始事件审计。
 
@@ -93,8 +94,8 @@ MQTT 的 PUBACK 只表示 broker 收到，不能替代业务 ack。
 
 ## 6. 安全边界
 
-- 开发环境可用用户名/密码；试产前升级为每设备独立客户端证书或等价的短期凭据；
-- broker ACL 限制设备只能访问自身 `foxsay/v1/devices/{device_id}/...`；
+- `local` 开发环境：broker `allow_anonymous`、无 topic ACL、REST 全开放（ADR-008），仅靠网络隔离；
+- `staging/production`：每设备独立客户端证书或等价的短期凭据；broker ACL 限制设备只能访问自身 `foxsay/v1/devices/{device_id}/...`；
 - 配对码只保存哈希、短时有效、限制尝试次数；
 - 下载 URL 短时签名，manifest 同时携带内容哈希；
 - 语音默认不持久保存；如业务需要保留，必须取得同意并设置自动删除期限；

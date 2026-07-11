@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foxsay.local/schemas/ack.json",
+  "title": "MessageAck",
+  "description": "业务确认，发布到 foxsay/v1/devices/{id}/acks，双向。按 correlation_id 关联原消息。",
+  "type": "object",
+  "required": ["schema_version", "message_id", "device_id", "sent_at", "type", "payload"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "message_id": {"type": "string", "minLength": 1},
+    "device_id": {"type": "string", "minLength": 1},
+    "sent_at": {"type": ["string", "null"], "format": "date-time"},
+    "clock_synced": {"type": "boolean"},
+    "device_sequence": {"type": "integer", "minimum": 0},
+    "type": {"type": "string", "const": "message.ack"},
+    "payload": {
+      "type": "object",
+      "required": ["correlation_id", "status"],
+      "properties": {
+        "correlation_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "被确认消息的 message_id。"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["accepted", "succeeded", "rejected", "failed"]
+        },
+        "error_code": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "expired",
+            "unsupported_schema",
+            "unsupported_command",
+            "invalid_payload",
+            "busy",
+            "download_failed",
+            "checksum_mismatch",
+            "insufficient_storage",
+            "internal_error"
+          ]
+        },
+        "detail": {
+          "type": ["string", "null"],
+          "description": "仅诊断用，不得含秘密。"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

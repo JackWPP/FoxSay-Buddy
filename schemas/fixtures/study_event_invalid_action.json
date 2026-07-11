@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "message_id": "01JZQY9BCDEG",
+  "device_id": "dev_01JZQXABCD",
+  "sent_at": "2026-07-11T05:31:13Z",
+  "type": "study.card_action",
+  "payload": {
+    "session_id": "ses_01JZQX",
+    "bundle_version": "2026.07.11.1",
+    "card_id": "card_euler_identity",
+    "card_type": "formula",
+    "action": "mastered"
+  }
+}

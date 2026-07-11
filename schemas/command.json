@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foxsay.local/schemas/command.json",
+  "title": "DeviceCommand",
+  "description": "服务端下发命令，发布到 foxsay/v1/devices/{id}/commands，QoS1，不 retain。按 expires_at 过期。",
+  "type": "object",
+  "required": ["schema_version", "message_id", "device_id", "sent_at", "expires_at", "type", "payload"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "message_id": {"type": "string", "minLength": 1},
+    "device_id": {"type": "string", "minLength": 1},
+    "sent_at": {"type": ["string", "null"], "format": "date-time"},
+    "expires_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "过期后服务端标记 expired，不再重发。"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["content.sync", "device.config_update", "device.reboot", "ota.install"]
+    },
+    "payload": {"type": "object"}
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"type": {"const": "content.sync"}}},
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "required": ["bundle_version", "url", "size_bytes", "sha256"],
+            "properties": {
+              "bundle_version": {"type": "string", "minLength": 1},
+              "url": {"type": "string", "format": "uri", "minLength": 1},
+              "size_bytes": {"type": "integer", "minimum": 0},
+              "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  ]
+}

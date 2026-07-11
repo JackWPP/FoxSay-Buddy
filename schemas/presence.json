@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foxsay.local/schemas/presence.json",
+  "title": "DevicePresence",
+  "description": "设备在线状态快照，发布到 foxsay/v1/devices/{id}/presence，retained。",
+  "type": "object",
+  "required": ["schema_version", "message_id", "device_id", "sent_at", "type", "payload"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "message_id": {"type": "string", "minLength": 1},
+    "device_id": {"type": "string", "minLength": 1},
+    "sent_at": {"type": ["string", "null"], "format": "date-time"},
+    "clock_synced": {"type": "boolean"},
+    "device_sequence": {"type": "integer", "minimum": 0},
+    "type": {"type": "string", "const": "device.presence"},
+    "payload": {
+      "type": "object",
+      "required": ["online", "firmware_version", "content_version"],
+      "properties": {
+        "online": {"type": "boolean"},
+        "firmware_version": {"type": "string", "minLength": 1},
+        "content_version": {"type": "string", "minLength": 1},
+        "network": {"type": "string", "enum": ["wifi", "ethernet", "none"]},
+        "posture": {"type": "string", "enum": ["upright", "flat", "moving", "unknown"]},
+        "free_heap_bytes": {"type": "integer", "minimum": 0},
+        "reset_reason": {"type": "string"}
+      },
+      "additionalProperties": true,
+      "description": "故意不含 battery：原型板是否可读电池是 TBD，确认硬件支持后再增加可选字段。"
+    }
+  },
+  "additionalProperties": false
+}

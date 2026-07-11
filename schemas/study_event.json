@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foxsay.local/schemas/study_event.json",
+  "title": "StudyCardAction",
+  "description": "学习动作事件，发布到 foxsay/v1/devices/{id}/events，QoS1，不 retain。按 message_id 幂等。",
+  "type": "object",
+  "required": ["schema_version", "message_id", "device_id", "sent_at", "type", "payload"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "message_id": {"type": "string", "minLength": 1},
+    "device_id": {"type": "string", "minLength": 1},
+    "sent_at": {"type": ["string", "null"], "format": "date-time"},
+    "clock_synced": {"type": "boolean"},
+    "device_sequence": {"type": "integer", "minimum": 0},
+    "type": {"type": "string", "const": "study.card_action"},
+    "payload": {
+      "type": "object",
+      "required": ["session_id", "bundle_version", "card_id", "card_type", "action"],
+      "properties": {
+        "session_id": {"type": "string", "minLength": 1},
+        "bundle_version": {"type": "string", "minLength": 1},
+        "card_id": {"type": "string", "minLength": 1},
+        "card_type": {"type": "string", "enum": ["vocabulary", "formula", "wiki"]},
+        "action": {
+          "type": "string",
+          "enum": ["view_next", "flip", "mark_difficult", "skip", "session_complete"],
+          "description": "P0 允许的动作。"
+        },
+        "device_sequence": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://foxsay.local/schemas/envelope.json",
+  "title": "MessageEnvelope",
+  "description": "通用消息信封，所有 MQTT 消息共用。FoxSay v1 namespace。",
+  "type": "object",
+  "required": ["schema_version", "message_id", "device_id", "sent_at", "type"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "envelope schema major.minor；非兼容变更需提升 major 并切换 namespace。"
+    },
+    "message_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "全局唯一、不可推测（ULID/UUID）。用于 QoS1 幂等与 ack 关联。"
+    },
+    "device_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sent_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "UTC RFC 3339。无可信墙钟时为 null，并置 clock_synced=false。"
+    },
+    "clock_synced": {
+      "type": "boolean",
+      "default": false,
+      "description": "设备墙钟是否已同步。false 时服务端以 received_at 为准。"
+    },
+    "device_sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "设备单调递增序号，用于无墙钟时排序与去重辅助。"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "消息类型，如 device.presence / study.card_action / content.sync / message.ack。"
+    },
+    "payload": {
+      "type": "object",
+      "description": "按 type 解释的负载。"
+    }
+  },
+  "additionalProperties": false
+}

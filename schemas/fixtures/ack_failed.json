@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "message_id": "01JZS0ACK002",
+  "device_id": "dev_01JZQXABCD",
+  "sent_at": "2026-07-11T05:35:05Z",
+  "type": "message.ack",
+  "payload": {
+    "correlation_id": "01JZR0CMD001",
+    "status": "failed",
+    "error_code": "checksum_mismatch",
+    "detail": "downloaded sha256 does not match manifest"
+  }
+}
