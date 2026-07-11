@@ -74,6 +74,10 @@ firmware/managed_components/
 *.dmp
 core.*
 
+# Tools: third-party SDKs and simulators (install via tools/setup.sh)
+tools/esp-idf/
+tools/lvgl_simulator/
+
 # C/C++ tooling
 compile_commands.json
 .cache/
